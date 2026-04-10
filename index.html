@@ -112,12 +112,14 @@
 <script>
 function getSelected() {
     let selected = [];
+    if (document.getElementById("bbCarl").checked) selected.push("Carl");
     if (document.getElementById("bbAaron").checked) selected.push("Aaron");
     if (document.getElementById("bbCorey").checked) selected.push("Corey");
     if (document.getElementById("bbTerris").checked) selected.push("Terris");
     if (document.getElementById("bbEric").checked) selected.push("Eric");
     return selected;
 }
+
 
 function updateLabels() {
     let selected = getSelected();
