@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Barback Tip-Out</title>
 
-    <!-- Fixes tiny text on iPhone -->
+    <!-- Fix tiny text on iPhone -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -11,7 +12,7 @@
             font-family: Arial, sans-serif;
             padding: 20px;
             background: #f4f4f4;
-            font-size: 22px; /* Bigger default text */
+            font-size: 22px;
         }
         .box {
             background: white;
@@ -39,22 +40,22 @@
             border-radius: 10px;
         }
         input[type="number"] { 
-        width: 100%; 
-    padding: 14px; 
-    margin-top: 6px; 
-    margin-bottom: 14px; 
-    font-size: 22px; 
-    background: #c8c8c8;      /* medium gray */
-    border: 2px solid #333;   /* dark border */
-    border-radius: 8px;
-    color: #000;    
+            width: 100%; 
+            padding: 14px; 
+            margin-top: 6px; 
+            margin-bottom: 14px; 
+            font-size: 22px; 
+            background: #c8c8c8;      /* darker input box */
+            border: 2px solid #333;   /* darker border */
+            border-radius: 8px;
+            color: #000;
         }
     </style>
 </head>
 <body>
 
     <h2>Barback Tip-Out Calculator</h2>
-    <p>Hi, hope you had a great shift! Please select the barbacks you worked with during your shift.</p>
+    <p>Hi! Hope you had a great shift! Please select the barbacks you worked with during your shift.</p>
 
     <div class="box">
         <div class="barback-row">
@@ -90,7 +91,10 @@
     </div>
 
     <button onclick="calculate()">Calculate Tip-Out</button>
-    <button onclick="resetForm()" style="margin-top:12px; background:#777;">Reset</button>
+
+    <button onclick="resetForm()" style="margin-top:12px; background:#777;">
+        Reset
+    </button>
 
     <div class="box">
         <p id="result1"></p>
@@ -132,39 +136,42 @@ function calculate() {
     let bb1pay = hourly * bb1hours;
     let bb2pay = hourly * bb2hours;
 
+    // ROUNDING RULE:
+    // Higher earner rounds UP, lower earner rounds DOWN
+    let bb1rounded, bb2rounded;
+
+    if (bb1pay > bb2pay) {
+        bb1rounded = Math.ceil(bb1pay);
+        bb2rounded = Math.floor(bb2pay);
+    } else {
+        bb1rounded = Math.floor(bb1pay);
+        bb2rounded = Math.ceil(bb2pay);
+    }
+
     document.getElementById("result1").innerText =
-        bb1 ? `${bb1} gets: $${bb1pay.toFixed(2)}` : "";
+        bb1 ? `${bb1} gets: $${bb1rounded}` : "";
 
     document.getElementById("result2").innerText =
-        bb2 ? `${bb2} gets: $${bb2pay.toFixed(2)}` : "";
+        bb2 ? `${bb2} gets: $${bb2rounded}` : "";
 }
+
 function resetForm() {
-    // Uncheck all barbacks
     document.getElementById("bbAaron").checked = false;
     document.getElementById("bbCorey").checked = false;
     document.getElementById("bbTerris").checked = false;
     document.getElementById("bbEric").checked = false;
 
-    // Clear hour inputs
     document.getElementById("bb1hours").value = "";
     document.getElementById("bb2hours").value = "";
-
-    // Clear tipout
     document.getElementById("totaltipout").value = "";
 
-    // Clear results
     document.getElementById("result1").innerText = "";
     document.getElementById("result2").innerText = "";
 
-    // Reset labels
     document.getElementById("labelBb1").innerText = "Hours for ___";
     document.getElementById("labelBb2").innerText = "Hours for ___";
 }
-    
 </script>
 
 </body>
 </html>
-
-
-
