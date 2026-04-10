@@ -86,6 +86,7 @@
     </div>
 
     <button onclick="calculate()">Calculate Tip-Out</button>
+    <button onclick="resetForm()" style="margin-top:12px; background:#777;">Reset</button>
 
     <div class="box">
         <p id="result1"></p>
@@ -133,6 +134,29 @@ function calculate() {
     document.getElementById("result2").innerText =
         bb2 ? `${bb2} gets: $${bb2pay.toFixed(2)}` : "";
 }
+function resetForm() {
+    // Uncheck all barbacks
+    document.getElementById("bbAaron").checked = false;
+    document.getElementById("bbCorey").checked = false;
+    document.getElementById("bbTerris").checked = false;
+    document.getElementById("bbEric").checked = false;
+
+    // Clear hour inputs
+    document.getElementById("bb1hours").value = "";
+    document.getElementById("bb2hours").value = "";
+
+    // Clear tipout
+    document.getElementById("totaltipout").value = "";
+
+    // Clear results
+    document.getElementById("result1").innerText = "";
+    document.getElementById("result2").innerText = "";
+
+    // Reset labels
+    document.getElementById("labelBb1").innerText = "Hours for ___";
+    document.getElementById("labelBb2").innerText = "Hours for ___";
+}
+    
 </script>
 
 </body>
