@@ -1,45 +1,49 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Barback Tip-Out</title>
+
+    <!-- Fixes tiny text on iPhone -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
             background: #f4f4f4;
+            font-size: 22px; /* Bigger default text */
         }
         .box {
             background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 18px;
         }
         .barback-row {
             display: flex;
             align-items: center;
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-size: 22px;
+            margin-bottom: 12px;
         }
         .barback-row input[type="checkbox"] {
-            margin-right: 10px;
-            transform: scale(1.3);
+            margin-right: 12px;
+            transform: scale(1.4);
         }
         button {
             width: 100%;
-            padding: 14px;
-            font-size: 20px;
+            padding: 16px;
+            font-size: 22px;
             background: black;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
         }
         input[type="number"] { 
             width: 100%; 
-            padding: 12px; 
-            margin-top: 5px; 
-            margin-bottom: 12px; 
-            font-size: 20px; 
+            padding: 14px; 
+            margin-top: 6px; 
+            margin-bottom: 14px; 
+            font-size: 22px; 
         }
     </style>
 </head>
@@ -50,31 +54,31 @@
 
     <div class="box">
         <div class="barback-row">
-            <input type="checkbox" id="bbAaron">
+            <input type="checkbox" id="bbAaron" onchange="updateLabels()">
             <label for="bbAaron">Aaron</label>
         </div>
 
         <div class="barback-row">
-            <input type="checkbox" id="bbCorey">
+            <input type="checkbox" id="bbCorey" onchange="updateLabels()">
             <label for="bbCorey">Corey</label>
         </div>
 
         <div class="barback-row">
-            <input type="checkbox" id="bbTerris">
+            <input type="checkbox" id="bbTerris" onchange="updateLabels()">
             <label for="bbTerris">Terris</label>
         </div>
 
         <div class="barback-row">
-            <input type="checkbox" id="bbEric">
+            <input type="checkbox" id="bbEric" onchange="updateLabels()">
             <label for="bbEric">Eric</label>
         </div>
     </div>
 
     <div class="box">
-        <label id="labelBb1">Hours for Barback 1</label>
+        <label id="labelBb1">Hours for ___</label>
         <input type="number" id="bb1hours">
 
-        <label id="labelBb2">Hours for Barback 2</label>
+        <label id="labelBb2">Hours for ___</label>
         <input type="number" id="bb2hours">
 
         <label>Total Tipout ($)</label>
@@ -89,23 +93,29 @@
     </div>
 
 <script>
-function calculate() {
+function getSelected() {
     let selected = [];
-
     if (document.getElementById("bbAaron").checked) selected.push("Aaron");
     if (document.getElementById("bbCorey").checked) selected.push("Corey");
     if (document.getElementById("bbTerris").checked) selected.push("Terris");
     if (document.getElementById("bbEric").checked) selected.push("Eric");
+    return selected;
+}
 
+function updateLabels() {
+    let selected = getSelected();
+
+    document.getElementById("labelBb1").innerText =
+        selected[0] ? `Hours for ${selected[0]}` : "Hours for ___";
+
+    document.getElementById("labelBb2").innerText =
+        selected[1] ? `Hours for ${selected[1]}` : "Hours for ___";
+}
+
+function calculate() {
+    let selected = getSelected();
     let bb1 = selected[0] || null;
     let bb2 = selected[1] || null;
-
-    // Update hour labels to show actual names
-    const labelBb1 = document.getElementById("labelBb1");
-    const labelBb2 = document.getElementById("labelBb2");
-
-    labelBb1.innerText = bb1 ? `Hours for ${bb1}` : "Hours for Barback 1";
-    labelBb2.innerText = bb2 ? `Hours for ${bb2}` : "Hours for Barback 2";
 
     let bb1hours = parseFloat(document.getElementById("bb1hours").value) || 0;
     let bb2hours = parseFloat(document.getElementById("bb2hours").value) || 0;
@@ -117,12 +127,16 @@ function calculate() {
     let bb1pay = hourly * bb1hours;
     let bb2pay = hourly * bb2hours;
 
-    document.getElementById("result1").innerText = bb1 ? `${bb1} gets: $${bb1pay.toFixed(2)}` : "";
-    document.getElementById("result2").innerText = bb2 ? `${bb2} gets: $${bb2pay.toFixed(2)}` : "";
+    document.getElementById("result1").innerText =
+        bb1 ? `${bb1} gets: $${bb1pay.toFixed(2)}` : "";
+
+    document.getElementById("result2").innerText =
+        bb2 ? `${bb2} gets: $${bb2pay.toFixed(2)}` : "";
 }
 </script>
 
 </body>
 </html>
+
 
 
