@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,7 +31,11 @@ button {
     border: none;
     border-radius: 8px;
 }
-label { font-size: 18px; }
+label {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 6px;
+}
 input, textarea {
     width: 100%;
     padding: 10px;
@@ -41,6 +46,10 @@ input, textarea {
 textarea {
     resize: none;
 }
+.welcome {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
 </style>
 </head>
 
@@ -48,31 +57,31 @@ textarea {
 
 <h2>Barback Tip-Out Calculator</h2>
 
-<div class="box">
-    <label><input type="checkbox" id="bbAaron"> Aaron</label><br>
-    <label><input type="checkbox" id="bbCorey"> Corey</label>
- <label><input type="checkbox" id="bbTerris"> Terris</label><br>
-    <label><input type="checkbox" id="bbEric"> Eric</label>
+<p class="welcome">
+Hi, hope you had a great shift! Please select the barbacks you worked with during your shift.
+</p>
 
+<div class="box">
+    <label><input type="checkbox" value="Aaron" onclick="handleSelection()"> Aaron</label>
+    <label><input type="checkbox" value="Corey" onclick="handleSelection()"> Corey</label>
+    <label><input type="checkbox" value="Terris" onclick="handleSelection()"> Terris</label>
+    <label><input type="checkbox" value="Eric" onclick="handleSelection()"> Eric</label>
 </div>
 
 <div class="box">
-    <label>Hours for Barback 1</label>
-    <input type="number" id="bb1hours">
+    <label id="label1">Hours for Barback 1</label>
+    <input type="number" id="h1">
 
-    <label>Hours for Barback 2</label>
-    <input type="number" id="bb2hours">
+    <label id="label2">Hours for Barback 2</label>
+    <input type="number" id="h2">
 
     <label>Total Tipout ($)</label>
-    <input type="number" id="totaltipout">
+    <input type="number" id="total">
 </div>
 
 <button onclick="calculate()">Calculate Tip-Out</button>
 
-<div class="box">
-    <p id="result1"></p>
-    <p id="result2"></p>
-</div>
+<div class="box" id="results"></div>
 
 <div class="box">
     <h3>Suggestions</h3>
@@ -82,35 +91,73 @@ textarea {
 </div>
 
 <script>
+function handleSelection() {
+    const checked = Array.from(
+        document.querySelectorAll('input[type="checkbox"]:checked')
+    );
+
+    if (checked.length > 2) {
+        event.target.checked = false;
+        alert("You can only select 2 barbacks.");
+        return;
+    }
+
+    label1.innerText = "Hours for Barback 1";
+    label2.innerText = "Hours for Barback 2";
+
+    if (checked[0]) label1.innerText = `Hours for ${checked[0].value}`;
+    if (checked[1]) label2.innerText = `Hours for ${checked[1].value}`;
+}
+
 function calculate() {
-    let bb1 = null;
-    let bb2 = null;
+    const selected = Array.from(
+        document.querySelectorAll('input[type="checkbox"]:checked')
+    ).map(cb => cb.value);
 
-    if (document.getElementById("bbAaron").checked) {
-        if (!bb1) bb1 = "Aaron"; else bb2 = "Aaron";
+    if (selected.length !== 2) {
+        results.innerText = "Please select exactly 2 barbacks.";
+        return;
     }
-    if (document.getElementById("bbCorey").checked) {
-        if (!bb1) bb1 = "Corey"; else bb2 = "Corey";
+
+    const h1Val = parseFloat(h1.value) || 0;
+    const h2Val = parseFloat(h2.value) || 0;
+    const totalTip = parseFloat(total.value) || 0;
+
+    const totalHours = h1Val + h2Val;
+    if (totalHours === 0) {
+        results.innerText = "Please enter hours worked.";
+        return;
     }
 
-    let h1 = parseFloat(bb1hours.value) || 0;
-    let h2 = parseFloat(bb2hours.value) || 0;
-    let total = parseFloat(totaltipout.value) || 0;
+    const rate = totalTip / totalHours;
 
-    let hours = h1 + h2;
-    if (hours === 0) return;
+    let pay1 = rate * h1Val;
+    let pay2 = rate * h2Val;
 
-    let rate = total / hours;
+    // Rounding rules
+    if (h1Val > h2Val) {
+        pay1 = Math.ceil(pay1);
+        pay2 = Math.floor(pay2);
+    } else if (h2Val > h1Val) {
+        pay2 = Math.ceil(pay2);
+        pay1 = Math.floor(pay1);
+    } else {
+        // Equal hours → round normally
+        pay1 = Math.round(pay1);
+        pay2 = Math.round(pay2);
+    }
 
-    result1.innerText = bb1 ? `${bb1} gets: $${(rate * h1).toFixed(2)}` : "";
-    result2.innerText = bb2 ? `${bb2} gets: $${(rate * h2).toFixed(2)}` : "";
+    results.innerHTML = `
+        <p>${selected[0]} gets: $${pay1}</p>
+        <p>${selected[1]} gets: $${pay2}</p>
+    `;
 }
 
 function saveSuggestion() {
-    let text = suggestion.value.trim();
+    const text = suggestion.value.trim();
     if (!text) return;
 
-    let list = JSON.parse(localStorage.getItem("suggestions") || "[]");
+    const list = JSON.parse(localStorage.getItem("suggestions") || "[]");
     list.push({ text, date: new Date().toLocaleString() });
     localStorage.setItem("suggestions", JSON.stringify(list));
 
