@@ -1,205 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Barback Tip-Out</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Tip-Out">
-
-<style>
-body {
-    font-family: Arial;
-    padding: 20px;
-    background: #f4f4f4;
-}
-.box {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-button {
-    width: 100%;
-    padding: 12px;
-    font-size: 18px;
-    background: black;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
-button.reset {
-    background: #777;
-}
-label {
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-input, textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    font-size: 18px;
-}
-input[type="checkbox"] {
-    transform: scale(1.3);
-}
-textarea {
-    resize: none;
-}
-.welcome {
-    font-size: 18px;
-    margin-bottom: 15px;
-}
-.message {
-    color: #b00020;
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-</style>
+    <title>Barback Tip-Out</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f4f4f4;
+        }
+        .box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .barback-row {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .barback-row input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.3); /* makes checkbox easier to tap */
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            font-size: 20px;
+            background: black;
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+        input[type="number"] { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 5px; 
+            margin-bottom: 12px; 
+            font-size: 20px; 
+        }
+    </style>
 </head>
-
 <body>
 
-<h2>Barback Tip-Out Calculator</h2>
+    <h2>Barback Tip-Out Calculator</h2>
 
-<p class="welcome">
-Hi, hope you had a great shift! Please select the barbacks you worked with during your shift.
-</p>
+    <div class="box">
+        <div class="barback-row">
+            <input type="checkbox" id="bbAaron">
+            <label for="bbAaron">Aaron</label>
+        </div>
 
-<div class="box">
-    <label><input type="checkbox" value="Aaron" onchange="handleSelection()"> Aaron</label>
-    <label><input type="checkbox" value="Corey" onchange="handleSelection()"> Corey</label>
-    <label><input type="checkbox" value="Terris" onchange="handleSelection()"> Terris</label>
-    <label><input type="checkbox" value="Eric" onchange="handleSelection()"> Eric</label>
-</div>
+        <div class="barback-row">
+            <input type="checkbox" id="bbCorey">
+            <label for="bbCorey">Corey</label>
+        </div>
 
-<div class="box">
-    <div id="message" class="message"></div>
+        <div class="barback-row">
+            <input type="checkbox" id="bbTerris">
+            <label for="bbTerris">Terris</label>
+        </div>
 
-    <label id="label1">Select first barback</label>
-    <input type="number" id="h1">
+        <div class="barback-row">
+            <input type="checkbox" id="bbEric">
+            <label for="bbEric">Eric</label>
+        </div>
+    </div>
 
-    <label id="label2">Select second barback</label>
-    <input type="number" id="h2">
+    <div class="box">
+        <label>Hours for Barback 1</label>
+        <input type="number" id="bb1hours">
 
-    <label>Total Tipout ($)</label>
-    <input type="number" id="total">
-</div>
+        <label>Hours for Barback 2</label>
+        <input type="number" id="bb2hours">
 
-<button onclick="calculate()">Calculate Tip-Out</button>
-<button class="reset" onclick="resetAll()">Reset for Next Shift</button>
+        <label>Total Tipout ($)</label>
+        <input type="number" id="totaltipout">
+    </div>
 
-<div class="box" id="results"></div>
+    <button onclick="calculate()">Calculate Tip-Out</button>
 
-<div class="box">
-    <h3>Suggestions</h3>
-    <textarea id="suggestion" rows="4" placeholder="Have an idea to improve this?"></textarea>
-    <button onclick="saveSuggestion()">Save Suggestion</button>
-    <p id="savedMsg"></p>
-</div>
+    <div class="box">
+        <p id="result1"></p>
+        <p id="result2"></p>
+    </div>
 
 <script>
-function handleSelection() {
-    const checkboxes = Array.from(document.querySelectorAll('input[type="checkbox"]'));
-    const checked = checkboxes.filter(cb => cb.checked);
-
-    message.innerText = "";
-
-    if (checked.length > 2) {
-        event.target.checked = false;
-        message.innerText = "You can only select 2 barbacks.";
-        return;
-    }
-
-    // Auto-clear hours when selection changes
-    h1.value = "";
-    h2.value = "";
-
-    // Reset labels
-    label1.innerText = "Select first barback";
-    label2.innerText = "Select second barback";
-
-    if (checked[0]) label1.innerText = `Hours for ${checked[0].value}`;
-    if (checked[1]) label2.innerText = `Hours for ${checked[1].value}`;
-}
-
 function calculate() {
-    const selected = Array.from(
-        document.querySelectorAll('input[type="checkbox"]:checked')
-    ).map(cb => cb.value);
+    let selected = [];
 
-    message.innerText = "";
-    results.innerHTML = "";
+    if (document.getElementById("bbAaron").checked) selected.push("Aaron");
+    if (document.getElementById("bbCorey").checked) selected.push("Corey");
+    if (document.getElementById("bbTerris").checked) selected.push("Terris");
+    if (document.getElementById("bbEric").checked) selected.push("Eric");
 
-    if (selected.length !== 2) {
-        message.innerText = "Please select exactly 2 barbacks.";
-        return;
-    }
+    let bb1 = selected[0] || null;
+    let bb2 = selected[1] || null;
 
-    const h1Val = parseFloat(h1.value) || 0;
-    const h2Val = parseFloat(h2.value) || 0;
-    const totalTip = parseFloat(total.value) || 0;
+    let bb1hours = parseFloat(document.getElementById("bb1hours").value) || 0;
+    let bb2hours = parseFloat(document.getElementById("bb2hours").value) || 0;
+    let totaltipout = parseFloat(document.getElementById("totaltipout").value) || 0;
 
-    if (h1Val + h2Val === 0) {
-        message.innerText = "Please enter hours worked.";
-        return;
-    }
+    let totalhours = bb1hours + bb2hours;
+    let hourly = totaltipout / totalhours;
 
-    const rate = totalTip / (h1Val + h2Val);
+    let bb1pay = hourly * bb1hours;
+    let bb2pay = hourly * bb2hours;
 
-    let pay1 = rate * h1Val;
-    let pay2 = rate * h2Val;
-
-    // Rounding rules
-    if (h1Val > h2Val) {
-        pay1 = Math.ceil(pay1);
-        pay2 = Math.floor(pay2);
-    } else if (h2Val > h1Val) {
-        pay2 = Math.ceil(pay2);
-        pay1 = Math.floor(pay1);
-    } else {
-        pay1 = Math.round(pay1);
-        pay2 = Math.round(pay2);
-    }
-
-    results.innerHTML = `
-        <p>${selected[0]} gets: $${pay1}</p>
-        <p>${selected[1]} gets: $${pay2}</p>
-    `;
-}
-
-function resetAll() {
-    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-    h1.value = "";
-    h2.value = "";
-    total.value = "";
-    results.innerHTML = "";
-    message.innerText = "";
-    label1.innerText = "Select first barback";
-    label2.innerText = "Select second barback";
-}
-
-function saveSuggestion() {
-    const text = suggestion.value.trim();
-    if (!text) return;
-
-    const list = JSON.parse(localStorage.getItem("suggestions") || "[]");
-    list.push({ text, date: new Date().toLocaleString() });
-    localStorage.setItem("suggestions", JSON.stringify(list));
-
-    suggestion.value = "";
-    savedMsg.innerText = "✅ Suggestion saved on this device";
+    document.getElementById("result1").innerText = bb1 ? `${bb1} gets: $${bb1pay.toFixed(2)}` : "";
+    document.getElementById("result2").innerText = bb2 ? `${bb2} gets: $${bb2pay.toFixed(2)}` : "";
 }
 </script>
 
 </body>
 </html>
+
 
