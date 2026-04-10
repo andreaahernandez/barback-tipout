@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Barback Tip-Out</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Tip-Out">
+
+<style>
+body {
+    font-family: Arial;
+    padding: 20px;
+    background: #f4f4f4;
+}
+.box {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+button {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+}
+label { font-size: 18px; }
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+textarea {
+    resize: none;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Barback Tip-Out Calculator</h2>
+
+<div class="box">
+    <label><input type="checkbox" id="bbAaron"> Aaron</label><br>
+    <label><input type="checkbox" id="bbCorey"> Corey</label>
+</div>
+
+<div class="box">
+    <label>Hours for Barback 1</label>
+    <input type="number" id="bb1hours">
+
+    <label>Hours for Barback 2</label>
+    <input type="number" id="bb2hours">
+
+    <label>Total Tipout ($)</label>
+    <input type="number" id="totaltipout">
+</div>
+
+<button onclick="calculate()">Calculate Tip-Out</button>
+
+<div class="box">
+    <p id="result1"></p>
+    <p id="result2"></p>
+</div>
+
+<div class="box">
+    <h3>Suggestions</h3>
+    <textarea id="suggestion" rows="4" placeholder="Have an idea to improve this?"></textarea>
+    <button onclick="saveSuggestion()">Save Suggestion</button>
+    <p id="savedMsg"></p>
+</div>
+
+<script>
+function calculate() {
+    let bb1 = null;
+    let bb2 = null;
+
+    if (document.getElementById("bbAaron").checked) {
+        if (!bb1) bb1 = "Aaron"; else bb2 = "Aaron";
+    }
+    if (document.getElementById("bbCorey").checked) {
+        if (!bb1) bb1 = "Corey"; else bb2 = "Corey";
+    }
+
+    let h1 = parseFloat(bb1hours.value) || 0;
+    let h2 = parseFloat(bb2hours.value) || 0;
+    let total = parseFloat(totaltipout.value) || 0;
+
+    let hours = h1 + h2;
+    if (hours === 0) return;
+
+    let rate = total / hours;
+
+    result1.innerText = bb1 ? `${bb1} gets: $${(rate * h1).toFixed(2)}` : "";
+    result2.innerText = bb2 ? `${bb2} gets: $${(rate * h2).toFixed(2)}` : "";
+}
+
+function saveSuggestion() {
+    let text = suggestion.value.trim();
+    if (!text) return;
+
+    let list = JSON.parse(localStorage.getItem("suggestions") || "[]");
+    list.push({ text, date: new Date().toLocaleString() });
+    localStorage.setItem("suggestions", JSON.stringify(list));
+
+    suggestion.value = "";
+    savedMsg.innerText = "✅ Suggestion saved on this device";
+}
+</script>
+
+</body>
+</html>
